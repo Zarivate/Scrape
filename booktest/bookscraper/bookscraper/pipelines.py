@@ -60,7 +60,7 @@ class BookscraperPipeline:
         stars_string = adapter.get("stars")
         split_stars = stars_string.split(" ")
         star_value = split_stars[1].lower()
-
+ 
         if star_value == "zero":
             adapter["stars"] = 0
         elif star_value == "one":
@@ -92,7 +92,7 @@ class SaveToMySQLPipeline:
         ## Create cursor, used to execute commands
         self.cur = self.conn.cursor()
         
-        ## Create books table if none exists
+        ## Create new books table if none exists
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS books(
             id int NOT NULL auto_increment, 
