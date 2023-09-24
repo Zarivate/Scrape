@@ -7,6 +7,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+
 BOT_NAME = "bookscraper"
 
 SPIDER_MODULES = ["bookscraper.spiders"]
@@ -17,6 +18,24 @@ FEEDS = {
         'format': 'json'
     }
 }
+
+SCRAPEOPS_API_KEY = ""
+SCRAPEOPS_FAKE_USER_AGENT_ENDPOINT = "https://headers.scrapeops.io/v1/user-agents"
+SCRAPEOPS_FAKE_USER_AGENT_ENABLED = True
+SCRAPEOPS_NUM_RESULTS = 5
+
+PROXY_USER = ''
+PROXY_PASSWORD = ''
+PROXY_ENDPOINT = ''
+PROXY_PORT = '7000'
+
+
+# Contains the IP alongside the port number
+ROTATING_PROXY_LIST = [
+    '43.134.167.51:443',
+    "38.127.172.200:11537",
+    "203.30.190.30:80",
+]
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -56,9 +75,13 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "bookscraper.middlewares.BookscraperDownloaderMiddleware": 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+   "bookscraper.middlewares.BookscraperDownloaderMiddleware": 543,
+#    "bookscraper.middlewares.ScrapeOpsFakeUAMiddleware": 400,
+   "bookscraper.middlewares.ScrapeOpsFakeBroswerHeaderAgentMiddleware": 300,
+   "rotating_proxies.middlewares.RotatingProxyMiddleware": 600,
+   "rotating_proxies.middlewares.BanDetectionMiddleware": 610,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

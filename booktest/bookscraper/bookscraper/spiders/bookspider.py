@@ -2,21 +2,27 @@ import scrapy
 # Import the created BookItem to be used instead of yielding all the data by itself
 from bookscraper.items import BookItem 
 import random
+from urllib.parse import urlencode
 
+API_KEY = ''
 class BookspiderSpider(scrapy.Spider):
     name = "bookspider"
-    allowed_domains = ["books.toscrape.com"]
+    allowed_domains = ["books.toscrape.com", "proxy.scrapeops.io"]
     start_urls = ["https://books.toscrape.com"]
 
 
+    # Function that scrapy looks for, used to customize the start urls that will be sent to the proxy provider endpoint
+    # def start_request(self):
+    #     yield scrapy.Request(url=get_proxy_url(self.start_urls[0]), callback=self.parse)
+
     # In order to avoid being blocked once too many requests are made, this rotating list of user agents is used
-    user_agent_list = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1',
-        'Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36 Edg/87.0.664.75',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363',    
-    ]
+    # user_agent_list = [
+    #     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+    #     'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1',
+    #     'Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)',
+    #     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36 Edg/87.0.664.75',
+    #     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363',    
+    # ]
 
     def parse(self, response):
         # Grab all the books on the current page
@@ -36,7 +42,8 @@ class BookspiderSpider(scrapy.Spider):
                 book_url = "https://books.toscrape.com/catalogue/" + relative_url
             # Go to the following page and call the book_parse function on that response
             # Upon every request, one of the user agents will be chosen among the lists when the call is made. This has to be applied to every response.follow
-            yield response.follow(book_url, callback=self.parse_book_page, headers={"User-Agent": self.user_agent_list[random.randint(0, len(self.user_agent_list)-1)]})  
+            # yield response.follow(book_url, callback=self.parse_book_page, headers={"User-Agent": self.user_agent_list[random.randint(0, len(self.user_agent_list)-1)]})  
+            yield response.follow(book_url, callback=self.parse_book_page)  
 
 
         next_page = response.css('li.next a ::attr(href)').get()
@@ -45,7 +52,8 @@ class BookspiderSpider(scrapy.Spider):
                 next_page_url = "https://books.toscrape.com/" + next_page
             else:
                 next_page_url = "https://books.toscrape.com/catalogue/" + next_page
-            yield response.follow(next_page_url, callback=self.parse, headers={"User-Agent": self.user_agent_list[random.randint(0, len(self.user_agent_list)-1)]})
+            # yield response.follow(next_page_url, callback=self.parse, headers={"User-Agent": self.user_agent_list[random.randint(0, len(self.user_agent_list)-1)]})
+            yield response.follow(next_page_url, callback=self.parse)
 
 
         
@@ -73,3 +81,10 @@ class BookspiderSpider(scrapy.Spider):
 
         
         yield book_item
+
+
+# Function to create a procy url using a third party site and it's credentials
+def get_proxy_url(url):
+    payload = {'api_key': API_KEY, 'url': url}
+    proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
+    return proxy_url
