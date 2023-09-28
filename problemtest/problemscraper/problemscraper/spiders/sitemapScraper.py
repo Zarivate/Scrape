@@ -10,6 +10,8 @@ class SitemapscraperSpider(SitemapSpider):
      ('blog/', 'parse'),
    ]
 
+# The function itself, follows pattern of previous spiders where an object is created to grab and store the retrieved data. Differs in how
+# there is no for each loop, instead simply reiterates itself.
     def parse(self, response):
         blogItem = siteMapBlogObject()
         blogItem["url"] = response.url
