@@ -11,7 +11,8 @@ BOT_NAME = "problemscraper"
 
 SPIDER_MODULES = ["problemscraper.spiders"]
 NEWSPIDER_MODULE = "problemscraper.spiders"
-
+DRIVER_PATH = "C:\\Users\\izara\\Desktop\\Projects\\scrape\\chromedriver.exe"
+BRAVE_PATH = "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "problemscraper (+http://www.yourdomain.com)"

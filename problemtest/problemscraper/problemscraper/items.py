@@ -13,3 +13,7 @@ class QuoteObject(scrapy.Item):
 class siteMapBlogObject(scrapy.Item):
     url = scrapy.Field()
     title = scrapy.Field()
+
+class laptopItem(scrapy.Item):
+    name = scrapy.Field()
+    price = scrapy.Field()
