@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 # now uses Selenium to open up a browser instance first and then do the same data collection as in the quotespider.
 class JavascriptQuoteSpider(scrapy.Spider):
     name = "quotesJSSpider"
-    start_urls = ["https://quotes.toscrape.com/js/"]
+    allowed_domains = ["https://quotes.toscrape.com/js/"]
     start_urls = ["https://quotes.toscrape.com/js"]
     
     def parse(self, response):
@@ -34,28 +34,31 @@ class JavascriptQuoteSpider(scrapy.Spider):
         browser = webdriver.Chrome(service=service, options=option)
         browser.get("https://quotes.toscrape.com/js/") 
 
-        quote_Xpath = '//*[@class="quote"]'
+        # All the paths for the data needed to fill out the QuoteObject fields
+        quote_path = '//div[@class="quote"]'
+        quote_text = './/span[@class="text"]'
+        quote_author = './/small[@class="author"]'
+        quote_tags = './/a[@class="tag"]'
 
-        quotes = browser.find_element(By.XPATH, quote_Xpath)
-        print("*****************************************************************************")
-        quote_Text = [quotes.text for quote in quotes]
-        print(quote_Text)
-        print("*****************************************************************************")
+        # Grab all the quotes on the page
+        quotes = browser.find_elements(By.XPATH, quote_path)
         
-       
-
         # Create a new QuoteObject to hold the quote data from the site
-        # quote = QuoteObject()
-        
-        # for page_quote in response.css("div.quote"):
-        #     print(page_quote.css('span.text::text').get())
-        #     print(page_quote.css('small.author::text').get())
-        #     print(page_quote.css('div.tags a.tag::text').getall())
-            
+        quote = QuoteObject()
 
-        # # Grabs the css containing the text needed to go to the following url
-        # next_page = response.css("li.next a::attr(href)").extract_first()
-        # # If the css exists, means there is still more quotes to scrape and keep going until css for next pages can't be found anymore
-        # if next_page:
-        #     yield response.follow(next_page, callback=self.parse)
+        # Iterate through every quote
+        for element in quotes:
+            # There can be multiple tags so an array is used to store them all and to append to the "tags" field later
+            tag_list = []
+            quote["text"] = element.find_element(By.XPATH, quote_text).text
+            quote["author"] = element.find_element(By.XPATH, quote_author).text
+            # Iterate through every tag
+            for tag in element.find_elements(By.XPATH, quote_tags):
+                # Add them to the list
+                tag_list.append(tag.text)
+            # Set the field to be equal to the list
+            quote["tags"] = tag_list
+            yield quote
+        
+        
        

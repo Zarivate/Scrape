@@ -1,0 +1,55 @@
+This file is nothing more than a breakdown on any problems and solutions I've encountered while testing out scraping.
+
+- Problem (Selenium):
+    - Webelement not iterating through data correctly, never got past first element when iterating like so.
+
+    browser.get("https://quotes.toscrape.com/js/") 
+
+    quote_path = '//div[@class="quote"]'
+
+    quotes = browser.find_elements(By.XPATH, quote_path)
+
+    # Example of quotes data 
+    # [<selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_1")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_2")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_3")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_4")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_5")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_6")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_7")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_8")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_9")>, 
+    # <selenium.webdriver.remote.webelement.WebElement (session="54cdf6973fd446c0e1ee7c396ca5f7dd", element="4323872DC5CC421A16062E7105C9C8ED_element_10")>]
+
+    # Example of data from the webpage itself
+    <div class="quote">
+        <span class="text">
+        “The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
+        </span>
+        <span>
+        "by "
+        </span>
+            <small class="author">Albert Einstein</small>
+        </span>
+      <div class="tags>
+        "Tags: "
+        <a class="tag">change</a>
+        <a class="tag">deep-thoughts</a>
+        <a class="tag">thinking</a>
+        <a class="tag">world</a>
+      </div>
+    </div>
+
+
+    for element in quotes:
+            quote['text'] = element.find_element(By.XPATH, '//span[@class="text"]').text
+            
+- Solution:
+    - Literally just adding a "." in front of the XPATH "//span[@class="text"]"
+    - The period allows for descendant elements to be searched, without it, only elements from the root/top element are located
+      so before hand, only the first quote's text was being repeated over and over again.
+
+- Found at
+    - https://stackoverflow.com/questions/45990851/how-do-i-iterate-through-a-webelements-list-with-python-and-selenium 
+    then led to
+    - https://stackoverflow.com/questions/40066687/unable-to-iterate-over-elements-in-selenium-python/40067370#40067370
