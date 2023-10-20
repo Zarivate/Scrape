@@ -9,10 +9,8 @@ from selenium.webdriver.common.by import By
 # now uses Selenium to open up a browser instance first and then do the same data collection as in the quotespider.
 class JavascriptQuoteSpider(scrapy.Spider):
     name = "quotesJSSpider"
-    allowed_domains = ["https://quotes.toscrape.com/js/"]
-    start_urls = ["https://quotes.toscrape.com/js"]
     
-    def parse(self, response):
+    def start_requests(self):
         # Not necessarily needed anymore in latest Selenium release but runs much faster
         driver_path = "C:\\Users\\izara\\Desktop\\Projects\\scrape\\chromedriver.exe"
         brave_path = "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
@@ -22,7 +20,7 @@ class JavascriptQuoteSpider(scrapy.Spider):
         option.binary_location = brave_path
 
         # Makes it so browser isn't visible when running 
-        # option.add_argument("--headless")
+        option.add_argument("--headless")
 
         # Open browser in incognito mode
         option.add_argument("--incognito")
@@ -60,5 +58,21 @@ class JavascriptQuoteSpider(scrapy.Spider):
             quote["tags"] = tag_list
             yield quote
         
-        
-       
+        # Sees whether a next page exists, if so there is more data to scrape
+        next_page = browser.find_element(By.XPATH, "//*[@class='next']//a[@href]")
+
+        # If there is a next page, find the href to go to the next page
+        if next_page:
+            # This is another way of doing it which is having the browser manually click the link
+            # next_link = next_page.find_element(By.XPATH, ".//a[@href]").click()
+            href = next_page.get_attribute("href") 
+            print(href)
+            yield scrapy.Request(href, callback=self.parse)
+        browser.quit()
+            
+# Function that creates a laptopItem using the passed in response
+    def parse(self, response):
+        quote = QuoteObject()
+        laptop["price"] = response.css(".pdp-price_color_orange ::text").get()
+        laptop["name"] = response.css("h1 ::text").get()
+        yield laptop

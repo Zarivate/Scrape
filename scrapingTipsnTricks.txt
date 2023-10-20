@@ -47,7 +47,8 @@ This file is nothing more than a breakdown on any problems and solutions I've en
 - Solution:
     - Literally just adding a "." in front of the XPATH "//span[@class="text"]"
     - The period allows for descendant elements to be searched, without it, only elements from the root/top element are located
-      so before hand, only the first quote's text was being repeated over and over again.
+      so before hand, only the first quote's text was being repeated over and over again. Essentially tells the file to look
+      for elements within that element, not the whole page.
 
 - Found at
     - https://stackoverflow.com/questions/45990851/how-do-i-iterate-through-a-webelements-list-with-python-and-selenium 
