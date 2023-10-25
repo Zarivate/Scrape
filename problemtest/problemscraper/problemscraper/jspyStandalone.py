@@ -4,10 +4,11 @@ import scrapy
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from problemscraper.settings import DRIVER_PATH, BRAVE_PATH
 
 # Not necessarily needed anymore in latest Selenium release but runs much faster
-driver_path = "C:\\Users\\izara\\Desktop\\Projects\\scrape\\chromedriver.exe"
-brave_path = "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+driver_path = DRIVER_PATH
+brave_path = BRAVE_PATH
 
 service = Service(executable_path=driver_path)
 option = webdriver.ChromeOptions()

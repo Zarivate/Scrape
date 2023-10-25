@@ -3,6 +3,7 @@ from problemscraper.items import QuoteObject
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from problemscraper.settings import DRIVER_PATH, BRAVE_PATH
 
 # This spider also handles sites that display data through JS, unlike the previous JS spider however, this one can't
 # circumvent having to open up a browser instance to first access the data. Same idea as quotespider essentially, just
@@ -15,8 +16,8 @@ class JavascriptQuoteSpider(scrapy.Spider):
     
     def parse(self, response):
         # Not necessarily needed anymore in latest Selenium release but runs much faster
-        driver_path = "C:\\Users\\izara\\Desktop\\Projects\\scrape\\chromedriver.exe"
-        brave_path = "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+        driver_path = DRIVER_PATH
+        brave_path = BRAVE_PATH
 
         service = Service(executable_path=driver_path)
         option = webdriver.ChromeOptions()
@@ -53,29 +54,24 @@ class JavascriptQuoteSpider(scrapy.Spider):
                 # Iterate through every quote
                 for element in quotes:
             
+                    # Grab the corresponding text and author data from their respective xPaths
                     quote["text"] = element.find_element(By.XPATH, quote_text).text
                     quote["author"] = element.find_element(By.XPATH, quote_author).text
+
                     # Since there can be multiple tags, they are all first grabbed and stored first
                     tags = element.find_elements(By.XPATH, quote_tags)
+
                     # Then they are iterated through and joined to fill out the "tags" section of the quote object
                     quote["tags"] = ",".join([tag.text for tag in tags])
-                    # Below is another way of doing what was done above
-                    # tag_list = []
-                    # for tag in element.find_elements(By.XPATH, quote_tags):
-                    #     # Add them to the list
-                    #     tag_list.append(tag.text)
-                    # Set the field to be equal to the list
-                    # quote["tags"] = tag_list
                     yield quote
                 
                 # Sees whether a next page exists, if so there is more data to scrape
                 next_page = browser.find_element(By.XPATH, "//*[@class='next']//a[@href]")
                 # Click the link to the next page
                 next_page.click()
+            # For this example, the exception would most likely occur when a failed attempt is made to locate the next_page
+            # element on the last page, which there is none. 
             except:
                 print("No more pages to scrape")
                 break    
         browser.quit()
-
-        
-# Table problem XPATH *//td[contains(@style, "padding-top")]  
