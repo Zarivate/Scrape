@@ -18,9 +18,16 @@ class QuotespiderSpider(scrapy.Spider):
 
         # Create a new QuoteObject to hold the quote data from the site
         quote = QuoteObject()
-
-        quotes = response.xpath('//td[contains(@style, "padding-top")]').getall()
-        print(quotes.length)
+        
+        quotes = response.xpath('//td[contains(@style, "padding-top")]/text()').getall()
+        tags = response.xpath('//td[contains(@style, "padding-bottom")]/text()').getall()
+        print(len(quotes))
+        for quote in quotes:
+            
+            author = quote.split("Author: ")[1]
+            print(author)
+            
+        
         
 
         
