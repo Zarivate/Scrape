@@ -20,12 +20,14 @@ class QuotespiderSpider(scrapy.Spider):
         quote = QuoteObject()
         
         quotes = response.xpath('//td[contains(@style, "padding-top")]/text()').getall()
-        tags = response.xpath('//td[contains(@style, "padding-bottom")]/text()').getall()
-        print(len(quotes))
-        for quote in quotes:
-            
-            author = quote.split("Author: ")[1]
-            print(author)
+        tags = response.xpath('//td[contains(@style, "padding-bottom")]/').getall()
+        print(tags)
+        print(tags[1])
+        print(tags[2])
+        for single_quote in quotes:
+            quote['text'] = single_quote.split(" Author: ")[0].replace('\n', '')
+            quote["author"] = single_quote.split("Author: ")[1]
+            yield quote
             
         
         
