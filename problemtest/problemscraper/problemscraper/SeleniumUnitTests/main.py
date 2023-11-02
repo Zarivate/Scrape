@@ -8,15 +8,14 @@ class PythonSearch(unittest.TestCase):
         self.driver = webdriver.Chrome("C:\\Program Files\\chromedriver.exe")
         self.driver.get("http://www.python.org")
 
-
-    def test_example(self):
-        print("Test")
-        assert True
-
     # Test to check whether title matches
-    def test_title(self):
-        mainPage = page.MainPage()
+    def test_search_python(self):
+        mainPage = page.MainPage(self.driver),
         assert mainPage.matches_title()
+        mainPage.search_text_element = "pycon"
+        mainPage.click_go_button()
+        search_results_page = page.SearchResultsPage(self.driver)
+        assert search_results_page.is_results_found()
 
     def tearDown(self):
         self.driver.close()
